@@ -30,7 +30,9 @@ for i in range(0, len(segEnd)):
 	cmStart = ""
 	cmEnd = ""
 	for j in range(0, len(cM)):
-		if (cmStart == "" and segStart[i] < bp[j]):
+		if (j == 0 and segStart[i] < bp[j]):
+			cmStart = cM[j]
+		elif (cmStart == "" and segStart[i] < bp[j]):
 			cmStart = (cM[j-1] + cM[j])/2
 		elif (cmStart == "" and segStart[i] == bp[j]):
 			cmStart = cM[j]

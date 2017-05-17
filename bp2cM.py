@@ -37,7 +37,7 @@ for i in range(0, len(segEnd)):
 		elif (cmStart == "" and segStart[i] == bp[j]):
 			cmStart = cM[j]
 		if (segEnd[i] < bp[j]):
-			cmEnd = (cM[j-1] + cM[j])/2
+			cmEnd = (cM[j+1] + cM[j])/2
 			break
 		elif (segEnd[i] == bp[j]):
 			cmEnd = cM[j]

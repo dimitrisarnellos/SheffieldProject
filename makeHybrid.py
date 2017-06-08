@@ -16,12 +16,12 @@ with open(sys.argv[1], 'r')  as f:
 			print(line.rstrip())
 		elif re.match('#', line):
 			header = re.match('((\S+\s+){9})', line)
-			print(header.group(1), "Hybrid", sep = "\t")
+			print(header.group(1), "Hybrid", sep="")
 		elif firstLineSwitch == True:
 			firstPos = re.match('\S+\s+(\S+)', line)
 			firstLineSwitch = False
 			firstLine = re.match('((\S+\s+){9})(\S+)', line)
-			print(firstLine.group(1), firstLine.group(3), sep="\t")
+			print(firstLine.group(1), firstLine.group(3), sep="")
 
 		else:
 			field = re.match('(\S+\s+(\S+)\s+(\S+\s+){7})(\S+\s+)(\S+\s+)', line)
@@ -29,9 +29,9 @@ with open(sys.argv[1], 'r')  as f:
 			if int(field.group(2)) > int(window) * windowCount + int(firstPos.group(1)):
 				windowCount = windowCount + 1
 			if windowCount % 2 == 1:
-				print(field.group(1), field.group(4), sep = "\t")
+				print(field.group(1), field.group(4).rstrip(), sep = "")
 			if windowCount %2 == 0:
-				print(field.group(1), field.group(5), sep = "\t")
+				print(field.group(1), field.group(5).rstrip(), sep = "")
 			##
 
 #print(window, firstPos.group(1))

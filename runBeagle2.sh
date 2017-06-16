@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#$ -l h_rt=24:00:00
+#$ -l h_rt=4:00:00
 #$ -pe openmp 4
 #$ -l rmem=12G
 #$ -l mem=12G

@@ -50,7 +50,7 @@ def neaAfterHum(indiv, indivStart, indivEnd, neaSegs):
 			fields = re.match('(\S+)\s+(\S+)',  line)
 			neaStart = int(fields.group(1))
 			neaEnd = int(fields.group(2))
-			indiv.append("Neandertal")
+			indiv.append("AltaiNea")
 			indivStart.append(neaStart)
 			indivEnd.append(neaEnd)
 	return indiv, indivStart, indivEnd

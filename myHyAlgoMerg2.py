@@ -10,7 +10,29 @@ def mainAlgo(humList, neaList, combinedList):
 	for i in range(len(humTemp[0])):
 		#case 3 - leaves the neaEnd lingering so needs to be treated from other cases
 		if len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] < humTemp[1][i] and neaList[1][0] > humTemp[2][i]:
-			if	neaList[0][0] > combinedList[2][-1]:
+			if len(combinedList[0]) != 0:
+				if	neaList[0][0] > combinedList[2][-1]:
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(neaList[0].pop(0))
+					combinedList[2].append(humTemp[1][i] - 1)
+					combinedList[0].append(humTemp[0][i])
+					combinedList[1].append(humTemp[1][i])
+					combinedList[2].append(humTemp[2][i])
+					humList[0].pop(0)
+					humList[1].pop(0)
+					humList[2].pop(0)
+				elif neaList[0][0] <= combinedList[2][-1]: #i dont know if its needed i need to think about it
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(combinedList[2][-1] + 1)
+					combinedList[2].append(humTemp[1][i] - 1)
+					combinedList[0].append(humTemp[0][i])
+					combinedList[1].append(humTemp[1][i])
+					combinedList[2].append(humTemp[2][i])
+					humList[0].pop(0)
+					humList[1].pop(0)
+					humList[2].pop(0)
+					neaList[0].pop(0)
+			else:
 				combinedList[0].append("AltaiNea")
 				combinedList[1].append(neaList[0].pop(0))
 				combinedList[2].append(humTemp[1][i] - 1)
@@ -20,17 +42,6 @@ def mainAlgo(humList, neaList, combinedList):
 				humList[0].pop(0)
 				humList[1].pop(0)
 				humList[2].pop(0)
-			elif neaList[0][0] <= combinedList[2][-1]: #i dont know if its needed i need to think about it
-				combinedList[0].append("AltaiNea")
-				combinedList[1].append(combinedList[2][-1] + 1)
-				combinedList[2].append(humTemp[1][i] - 1)
-				combinedList[0].append(humTemp[0][i])
-				combinedList[1].append(humTemp[1][i])
-				combinedList[2].append(humTemp[2][i])
-				humList[0].pop(0)
-				humList[1].pop(0)
-				humList[2].pop(0)
-				neaList[0].pop(0)
 		#case 4 - leaves the neaEnd lingering so needs to be treated from other cases
 		elif len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] >= humTemp[1][i] and neaList[0][0] <= humTemp[2][i] and neaList[1][0] > humTemp[2][i]:
 			combinedList[0].append(humTemp[0][i])
@@ -62,18 +73,23 @@ def mainAlgo(humList, neaList, combinedList):
 			humList[2].pop(0)
 		#neastart neaend before humstart, case 1
 		elif len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] < humTemp[1][i] and neaList[1][0] < humTemp[1][i]:
-			if neaList[0][0] > combinedList[2][-1]:
+			if len(combinedList[0]) != 0:
+				if neaList[0][0] > combinedList[2][-1]:
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(neaList[0].pop(0))
+					combinedList[2].append(neaList[1].pop(0))
+				elif neaList[0][0] <= combinedList[2][-1] and neaList[1][0] > combinedList[2][-1]:
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(combinedList[2][-1] + 1)
+					combinedList[2].append(neaList[1].pop(0))
+					neaList[0].pop(0)
+				elif neaList[0][0] < combinedList[2][-1] and neaList[1][0] <= combinedList[2][-1]:
+					neaList[0].pop(0)
+					neaList[1].pop(0)
+			else:
 				combinedList[0].append("AltaiNea")
 				combinedList[1].append(neaList[0].pop(0))
 				combinedList[2].append(neaList[1].pop(0))
-			elif neaList[0][0] <= combinedList[2][-1] and neaList[0][0] > combinedList[2][-1]:
-				combinedList[0].append("AltaiNea")
-				combinedList[1].append(combinedList[2][-1] + 1)
-				combinedList[2].append(neaList[1].pop(0))
-				neaList[0].pop(0)
-			elif neaList[0][0] < combinedList[2][-1] and neaList[0][0] <= combinedList[2][-1]:
-				neaList[0].pop(0)
-				neaList[1].pop(0)
 			break
 		#case 10 - like case 1 but neaEnd = humStart
 		elif len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] < humTemp[1][i] and neaList[1][0] == humTemp[1][i]:
@@ -91,7 +107,32 @@ def mainAlgo(humList, neaList, combinedList):
 			break
 		#case 2
 		elif len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] < humTemp[1][i] and humTemp[1][i] < neaList[1][0] and neaList[1][0] <= humTemp[2][i]:
-			if neaList[0][0] > combinedList[2][-1]:
+			if len(combinedList[0]) != 0:
+				if neaList[0][0] > combinedList[2][-1]:
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(neaList[0].pop(0))
+					combinedList[2].append(humTemp[1][i] - 1)
+					combinedList[0].append(humTemp[0][i])
+					combinedList[1].append(humTemp[1][i])
+					combinedList[2].append(humTemp[2][i])
+					neaList[1].pop(0)
+					humList[0].pop(0)
+					humList[1].pop(0)
+					humList[2].pop(0)
+				elif neaList[0][0] <= combinedList[2][-1]:
+					combinedList[0].append("AltaiNea")
+					combinedList[1].append(combinedList[2][-1] + 1)
+					combinedList[2].append(humTemp[1][i] - 1)
+					combinedList[0].append(humTemp[0][i])
+					combinedList[1].append(humTemp[1][i])
+					combinedList[2].append(humTemp[2][i])
+					neaList[0].pop(0)
+					neaList[1].pop(0)
+					humList[0].pop(0)
+					humList[1].pop(0)
+					humList[2].pop(0)
+				break
+			else:
 				combinedList[0].append("AltaiNea")
 				combinedList[1].append(neaList[0].pop(0))
 				combinedList[2].append(humTemp[1][i] - 1)
@@ -102,19 +143,6 @@ def mainAlgo(humList, neaList, combinedList):
 				humList[0].pop(0)
 				humList[1].pop(0)
 				humList[2].pop(0)
-			elif neaList[0][0] <= combinedList[2][-1]:
-				combinedList[0].append("AltaiNea")
-				combinedList[1].append(combinedList[2][-1] + 1)
-				combinedList[2].append(humTemp[1][i] - 1)
-				combinedList[0].append(humTemp[0][i])
-				combinedList[1].append(humTemp[1][i])
-				combinedList[2].append(humTemp[2][i])
-				neaList[0].pop(0)
-				neaList[1].pop(0)
-				humList[0].pop(0)
-				humList[1].pop(0)
-				humList[2].pop(0)
-			break
 		#case 5
 		elif len(neaList[0]) == len(neaList[1]) and len(neaList[0]) != 0 and neaList[0][0] >= humTemp[1][i] and neaList[1][0] <= humTemp[2][i]:
 			combinedList[0].append(humTemp[0][i])
@@ -160,12 +188,12 @@ def remainingItems(humList, neaList, combinedList):
 		neaTemp = copy.deepcopy(neaList)
 		for i in range(len(neaTemp[0])):
 			if combinedList[2][-1] < neaTemp[1][i]:
-				combinedList[0].append("Neandertal")
+				combinedList[0].append("AltaiNea")
 				combinedList[1].append(combinedList[2][-1] + 1)
 				combinedList[2].append(neaList[1].pop(0))
 				neaList[0].pop(0)
 			else:
-				combinedList[0].append("Neandertal")
+				combinedList[0].append("AltaiNea")
 				combinedList[1].append(neaList[0].pop(0))
 				combinedList[2].append(neaList[1].pop(0))
 	#case 1
@@ -177,6 +205,7 @@ def remainingItems(humList, neaList, combinedList):
 			combinedList[2].append(humList[2].pop(0))
 	#re-iterate
 	if len(neaList[0]) != 0 or len(humList[0]) != 0:
+		#print(neaList, humList)
 		humList, neaList, combinedList = remainingItems(humList, neaList, combinedList)
 	return humList, neaList, combinedList
 
@@ -190,10 +219,10 @@ def mergeHumansOverNea(input):
 		ind = fields.group(1)
 		segStart = int(fields.group(2))
 		segEnd = int(fields.group(3))
-		if ind == "Neandertal":
+		if ind == "AltaiNea":
 			neaList[0].append(segStart)
 			neaList[1].append(segEnd)
-		elif ind != "Neandertal":
+		elif ind != "AltaiNea":
 			humList[0].append(ind)
 			humList[1].append(segStart)
 			humList[2].append(segEnd)
@@ -202,8 +231,8 @@ def mergeHumansOverNea(input):
 			if neaList[1][0] <= humList[1][-1]:
 				humList, neaList, combinedList = mainAlgo(humList, neaList, combinedList)
 	#after having finished appending from stdin to humList and neaList, applying the algorithm to the remaining parts
-	#while len(neaList[0]) > 0 and len(humList[0]) > 0:
-	#	if neaList[1][0] < humList[1][0]:
+	#print(len(combinedList[0]), len(combinedList[1]), len(combinedList[2]))
+	#print(combinedList)
 	humList, neaList, combinedList = remainingItems(humList, neaList, combinedList)
 	return combinedList
 

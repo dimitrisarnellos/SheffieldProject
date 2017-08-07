@@ -2,9 +2,9 @@
 removeDup chrNum.result | python emiResult.py [afr|nonafr] [strict|50]
 '''
 
-afrFile = "/fastdata/bo4da/Data/1000genomes/byPopulation/afr.list"
-eurFile = "/fastdata/bo4da/Data/1000genomes/byPopulation/eur.list"
-easFile = "/fastdata/bo4da/Data/1000genomes/byPopulation/eas.list"
+afrFile = "/data/bo4da/afr.list"
+eurFile = "/data/bo4da/eur.list"
+easFile = "/data/bo4da/eas.list"
 
 import sys,re
 

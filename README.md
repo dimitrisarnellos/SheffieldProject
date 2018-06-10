@@ -358,74 +358,6 @@ normtrunkated$ibdden <- normcut$ibdden[normcut$ibdden$Length < 10000,]
 normtrunkated$ibdnea <- normcut$ibdnea[normcut$ibdnea$Length < 10000,]
 ```
 
-
-# HYBRIDS
-### make hybrids for all chromosomes
-```bash
-bash /home/bo4da/Scripts/pipelineHybrids.sh
-```
-
-### adding dataset to hybrids
-```bash
-bcftools concat afrhyb* -o afrALL.vcf
-bcftools concat asianhyb* -o asianALL.vcf
-bcftools concat eurhyb* -o eurALL.vcf
-bgzip /fastdata/bo4da/Data/postTests/datasetsCorrect/refmerged/refALL.vcf
-tabix -p vcf /fastdata/bo4da/Data/postTests/datasetsCorrect/refmerged/refALL.vcf.gz
-bgzip afrALL.vcf
-tabix -p vcf afrALL.vcf.gz
-bgzip asianALL.vcf
-tabix -p vcf asianALL.vcf.gz
-bgzip eurALL.vcf
-tabix -p vcf eurALL.vcf.gz
-bcftools merge /fastdata/bo4da/Data/postTests/datasetsCorrect/refmerged/refALL.vcf.gz afrALL.vcf.gz asianALL.vcf.gz eurALL.vcf.gz --force-samples -o datasetWithHybridsFULL
-bcftools view -s ^panTro4 datasetWithHybridsFULL -o datasetWithHybridsFULLnochimp.vcf
-```
-
-### add den4
-```bash
-vcftools --vcf ../datasetWithHybridsFULLnochimp.vcf --positions ../../Denisova_4.chr_pos --recode --out refallhybden4pos
-plink --vcf refallhybden4pos.recode.vcf --recode --out refallhybden4posplink
-plink --tfile ../../Denisova_4 --recode --out den4all
-join -j 4 <(sort -k4,4 refallhybden4posplink.map) <(sort -k4,4 den4all.map) -o '1.1,2.2,1.3,2.4' > correctRS4.map
-python /home/bo4da/Scripts/fixmaps.py correctRS4.map refallhybden4posplink.map > refallhybden4posplink.mapnew
-mv refallhybden4posplink.map refallhybden4posplink.mapold
-mv refallhybden4posplink.mapnew refallhybden4posplink.map
-awk '{print $2}' refallhybden4posplink.map > den4subsetID.txt
-plink --file den4all --extract den4subsetID.txt --recode --out den4allsubset
-plink --file den4allsubset --make-bed --out den4allsubsetbed
-plink --file refallhybden4posplink --make-bed --out refallhybden4posplinkbed
-plink --bfile refallhybden4posplinkbed --bmerge den4allsubsetbed.bed den4allsubsetbed.bim den4allsubsetbed.fam --recode --out den4mergedhyb
-plink --bfile refallhybden4posplinkbed --exclude den4mergedhyb.missnp --make-bed --out den4biallelichyb
-plink --bfile den4biallelichyb --bmerge den4allsubsetbed.bed den4allsubsetbed.bim den4allsubsetbed.fam --recode --out den4mergedFINALhyb
-
-echo -e "AltaiNea AltaiNea\nDenisovaPinky DenisovaPinky\nDenisova_4 Denisova_4\npanTro4 panTro4\nHybrid Hybrid\n 3:Hybrid 3:Hybrid\n4:Hybrid 4:Hybrid" > nohumanshyb4.txt
-plink --file den4mergedFINALhyb --keep nohumanshyb4.txt --make-bed --out nohumsfinhyb4
-plink --bfile nohumsfinhyb4 --pca --out nohumsfinpcahyb4
-```
-
-### add den8
-```bash
-vcftools --vcf ../datasetWithHybridsFULLnochimp.vcf --positions ../../Denisova_8.chr_pos --recode --out refallhybden8pos
-plink --vcf refallhybden8pos.recode.vcf --recode --out refallhybden8posplink
-plink --tfile ../../Denisova_8 --recode --out den8all
-join -j 4 <(sort -k4,4 refallhybden8posplink.map) <(sort -k4,4 den8all.map) -o '1.1,2.2,1.3,2.4' > correctRS8.map
-python /home/bo4da/Scripts/fixmaps.py correctRS8.map refallhybden8posplink.map > refallhybden8posplink.mapnew
-mv refallhybden8posplink.map refallhybden8posplink.mapold
-mv refallhybden8posplink.mapnew refallhybden8posplink.map
-awk '{print $2}' refallhybden8posplink.map > den8subsetID.txt
-plink --file den8all --extract den8subsetID.txt --recode --out den8allsubset
-plink --file den8allsubset --make-bed --out den8allsubsetbed
-plink --file refallhybden8posplink --make-bed --out refallhybden8posplinkbed
-plink --bfile refallhybden8posplinkbed --bmerge den8allsubsetbed.bed den8allsubsetbed.bim den8allsubsetbed.fam --recode --out den8mergedhyb
-plink --bfile refallhybden8posplinkbed --exclude den8mergedhyb.missnp --make-bed --out den8biallelichyb
-plink --bfile den8biallelichyb --bmerge den8allsubsetbed.bed den8allsubsetbed.bim den8allsubsetbed.fam --recode --out den8mergedFINALhyb
-
-echo -e "AltaiNea AltaiNea\nDenisovaPinky DenisovaPinky\nDenisova_8 Denisova_8\npanTro4 panTro4\nHybrid Hybrid\n 3:Hybrid 3:Hybrid\n4:Hybrid 4:Hybrid" > nohumanshyb8.txt
-plink --file den8mergedFINALhyb --keep nohumanshyb8.txt --make-bed --out nohumsfinhyb8
-plink --bfile nohumsfinhyb8 --pca --out nohumsfinpcahyb8
-```
-
 # PLOTS IN R
 
 ```r
@@ -434,54 +366,38 @@ source('~/Sheffield/Rworkdir/commands1.R')
 
 ### figure 2
 ```r
-africans <- read.table("afr.list")
-europeans <- read.table("eur.list")
-eastAsians <- read.table("eas.list")
-pca <- read.table("noChPCA.eigenvec")
-pca$Population[pca$V1 %in% africans$V1] <- "AFR"
-pca$Population[pca$V1 %in% europeans$V1] <- "EUR"
-pca$Population[pca$V1 %in% eastAsians$V1] <- "EAS"
-pca$Population[pca$V1 == "AltaiNea"] <- "Neandertal"
-pca$Population[pca$V1 == "DenisovaPinky"] <- "Denisovan"
+YRI <- read.table('YRI.list')
+GBR <- read.table('GBR.list')
+CHB <- read.table('CHB.list')
 
-tiff("FPpca.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
-ggplot(pca) + geom_point(aes(x=V3, y=V4, color=Population)) + guides(colour = guide_legend(override.aes = list(size = 5))) + theme_bw() +
-geom_text(data=pca[pca$V1 == "AltaiNea",], aes(V3, V4,label=Population, hjust=-0.1)) + 
-geom_text(data=pca[pca$V1 == "DenisovaPinky",], aes(V3, V4,label=Population, hjust=-0.1)) +
-theme(legend.key=element_rect(fill=NA)) + ggtitle("Main Dataset 36 Million Markers") + scale_color_brewer(palette="Set1") +
-labs(x="Eigenvector 1: 26.37%", y="Eigenvector 2: 11.83%")
-dev.off()
-```
-
-### figure 3
-```r
 new <- read.table("smibs.genome", header = TRUE)
-new$FID3[new$IID1 %in% YRI$V1] <- "YRI"
-new$FID3[new$IID1 %in% CHB$V1] <- "CHB"
-new$FID3[new$IID1 %in% GBR$V1] <- "GBR"
-neanew <- ggplot(data = new[new$IID2 == "AltaiNea" & (new$FID3 == "YRI" | new$FID3 == "CHB" | new$FID3 == "GBR"),], aes(x=FID3, y=DST)) + geom_boxplot() + ggtitle("Neandertal New Dataset")
-dennew <- ggplot(data = new[new$IID2 == "DenisovaPinky" & (new$FID3 == "YRI" | new$FID3 == "CHB" | new$FID3 == "GBR"),], aes(x=FID3, y=DST)) + geom_boxplot() + ggtitle("Denisova New Dataset")
+new$Population[new$IID1 %in% YRI$V1] <- "YRI"
+new$Population[new$IID1 %in% CHB$V1] <- "CHB"
+new$Population[new$IID1 %in% GBR$V1] <- "GBR"
 
-dennew
+tiff("FTplinkDST2.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
+ggplot(data = new[new$IID2 == "DenisovaPinky" & !is.na(new$Population),], aes(x=Population, y=DST)) + geom_boxplot()
+dev.off()
+
 ```
 
-### figure 4a
+### figure 3a
 ```r
-tiff("FPrezhighResDenisovan.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(norm, title = "Denisovan - Total Pairwise IBD")
+tiff("FTrezhighResDenisovanCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(norm)
 dev.off()
 ```
 
-### figure 4b
+### figure 3b
 ```r
-tiff("FPrezhighResNeandertal.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(norm, "nea", title = "Neandertal - Total Pairwise IBD")
+tiff("FTrezhighResNeandertalCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(norm, "nea")
 dev.off()
 ```
 
-### figure 5
+### figure 4
 ```r
-tiff("FPrezhighResMainVsRand.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+tiff("FTrezhighResMainVsRandCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 ggplot() + 
 theme_bw() +
 geom_density(data = norm$ibdden[norm$ibdden$Subpopulation == "MSL" | norm$ibdden$Subpopulation == "YRI" | norm$ibdden$Subpopulation == "ESN" | norm$ibdden$Subpopulation == "LWK" | norm$ibdden$Subpopulation == "GWD",], aes(Length, fill=Population), alpha = 0.5) +
@@ -491,100 +407,78 @@ scale_fill_manual(values=c('black')) + scale_fill_discrete(name = "") +
 labs(x="Segment Length", y="Density") + scale_x_continuous(limits = c(0, 40000)) +
 scale_fill_brewer(palette="Set2") +
 geom_vline(aes(xintercept=as.numeric(quantile(ran$ibdden[ran$ibdden$Population != "Neandertal" & ran$ibdden$Population != "Chimpanzee",]$Length, 0.95))), colour="blue") +
-geom_text(aes(x=1000, y=0.00018, label = "Random"), alpha=0.7) +
-ggtitle("Denisova - Main dataset vs Randomised - Segments' Length")
+geom_text(aes(x=1000, y=0.00018, label = "Random"), alpha=0.7) + theme(legend.title=element_blank())
+dev.off()
+```
+
+### figure 5a
+```r
+tiff("FTrezhighResDenCutCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(normcut)
+dev.off()
+```
+
+### figure 5b
+```r
+tiff("FTrezhighResNeaCutCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(normcut, "nea")
 dev.off()
 ```
 
 ### figure 6a
 ```r
-eashybprop <- c(12.99, 100 - (32.68 + 12.99), 28.08, 4.6, 6.04, 100 - (37.96 + 6.04), 26.41, 11.55, 14.77, 100 - (31.26 + 14.77), 28.44, 2.82)
-eashybprop <- data.frame(eashybprop)
-eashybprop$Source <- c("Humans", "Denisovan", "Neandertal", "EAS", "Humans", "Denisovan", "Neandertal", "AFR", "Humans", "Denisovan", "Neandertal", "EUR")
-eashybprop$Hybrid <- c("EAS", "EAS", "EAS", "EAS", "AFR", "AFR", "AFR", "AFR", "EUR", "EUR", "EUR", "EUR")
-eashybprop$Source <- factor(eashybprop$Source, levels = c("Humans", "Denisovan", "Neandertal", "EAS", "AFR", "EUR", ordered = TRUE))
-eashybprop$eashybprop <- eashybprop$eashybprop*0.01
-ggplot(data = eashybprop, aes(x=Hybrid, y=eashybprop, fill=Source)) + geom_bar(stat = "identity", position = "fill") + geom_text(aes(label = paste0(eashybprop*100, "%")), position = position_stack(vjust = 0.5)) +
-theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + coord_flip() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-          axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank(),legend.title=element_blank()) + scale_fill_brewer(palette="Set1")
-```
-		  
-### figure 6b
-```r
-tiff("FPpcaHybDen4.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
-hybridPCA("nohumsfinpcahyb4.eigenvec", title = "Hybrids with Den_4 1530 SNPs")
+threepops <- superpopulations("last3Merg")
+
+tiff("FTrezhighThreePopCor.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(threepops)
 dev.off()
 ```
 
-### figure 6c
+### figure 6b
 ```r
-tiff("FPpcaHybDen8.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
-hybridPCA("nohumsfinpcahyb8.eigenvec", title = "Hybrids with Den_8 32492 SNPs")
+tiff("FTrezhighThreePopCutCor.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(threerealcut)
 dev.off()
 ```
 
 ### figure 7a
 ```r
-tiff("FPrezhighResDenCut.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(normcut, title = "Denisovan after cutoff - Total Pairwise IBD")
+randYRI <- superpopulations("randYRImerg")
+threerealcut <- threepops
+threerealcut$ibdden <- threepops$ibdden[threepops$ibdden$Length > quantile(randYRI$ibdden[randYRI$ibdden$Subpopulation == "RYRI",]$Length, 0.95),]
+
+tiff("FTrezhighResDenSegLenv2Cor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientMeanSegLenv2(norm)
 dev.off()
 ```
 
 ### figure 7b
 ```r
-tiff("FPrezhighResNeaCut.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(normcut, "nea", title = "Neandertal after cutoff - Total Pairwise IBD")
+manyall <- superpopulations("manyallmerg")
+tiff("FTrezhighRes4mDenSegLenCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientMeanSegLenv2(manyall)
 dev.off()
 ```
 
 ### figure 8a
 ```r
-tiff("FPrezhighThreePop.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(threepops, title = "Denisovan - Total Pairwise IBD")
+chr1original <- superpopulations("onlychr1.final")
+tiff("FTrezhighResDenisovanChr1Cor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(chr1original)
 dev.off()
 ```
 
 ### figure 8b
 ```r
-tiff("FPrezhighThreePopCut.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(threerealcut, title = "Denisovan after cutoff - Total Pairwise IBD")
+randcor <- superpopulations("randCorrMerg")
+tiff("FTrezhighResDenisovanRLWKCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(randcor)
 dev.off()
 ```
 
 ### figure 9a
 ```r
-tiff("FPrezhighResDenSegLenv2.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientMeanSegLenv2(norm, title = "Denisovan - 36 Million Markers - Segments' Length")
-dev.off()
-```
-
-### figure 9b
-```r
-tiff("FPrezhighRes4mDenSegLen.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientMeanSegLenv2(manyall, title = "Denisovan - 4 Million Markers Dataset - Segments' Length")
-dev.off()
-```
-
-### figure 10a
-```r
-tiff("FPrezhighResDenisovanChr1.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(chr1original, title = "Denisovan - Main Dataset Chromosome 1 - Total Pairwise IBD")
-dev.off()
-```
-
-### figure 10b
-```r
-tiff("FPrezhighResDenisovanRLWK.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(randcor, title = "Denisovan - Main Dataset with Randomised LWK - Total Pairwise IBD")
-dev.off()
-```
-
-### figure 11a
-```r
-tiff("FPrezhighResRandNeaAndTrunk.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+tiff("FTrezhighResRandNeaAndTrunkCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 ggplot() + 
 theme_bw() +
 geom_density(data = norm$ibdnea[norm$ibdnea$Subpopulation == "MSL" | norm$ibdnea$Subpopulation == "YRI" | norm$ibdnea$Subpopulation == "ESN" | norm$ibdnea$Subpopulation == "LWK" | norm$ibdnea$Subpopulation == "GWD",], aes(Length, fill=Population), alpha = 0.5) +
@@ -595,13 +489,13 @@ scale_fill_brewer(palette="Set2") +
 geom_vline(aes(xintercept=as.numeric(quantile(ran$ibdnea[ran$ibdnea$Population != "Denisovan" & ran$ibdnea$Population != "Chimpanzee",]$Length, 0.95))), colour="blue") +
 geom_vline(aes(xintercept=10000), colour="blue") +
 geom_rect(aes(xmin=as.numeric(quantile(ran$ibdnea[ran$ibdnea$Population != "Denisovan" & ran$ibdnea$Population != "Chimpanzee",]$Length, 0.95)), xmax=10000, ymin=0, ymax=Inf), alpha = 0.4) +
-ggtitle("Neandertal - Truncated segments over 10000 bp - Segments' Length")
+theme(legend.title=element_blank())
 dev.off()
 ```
 
-### figure 11b
+### figure 9b
 ```r
-tiff("FPrezhighResNeaTrunk.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
-DrawAncientsRef(normtrunkated, "nea", title = "Neandertal - Trunkated segments over 10000 bp - Total Pairwise IBD")
+tiff("FTrezhighResNeaTrunkCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+DrawAncientsRef(normtrunkated, "nea")
 dev.off()
 ```

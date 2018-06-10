@@ -630,7 +630,7 @@ lengthPeaksTotalPairwise <- function(populations){
 }
 
 #DrawAncientsRef <- function(populations, ancientGroup = "den", title = "Title"){
-DrawAncientsRef <- function(populations, ancientGroup = "den", title = "Title"){
+DrawAncientsRef <- function(populations, ancientGroup = "den", title = ""){
 	if ("RLWK" %in% populations$ibdden$Subpopulation){
 		populations$ibdden$Subpopulation <- factor(populations$ibdden$Subpopulation, levels = c("LWK", "MSL", "GWD", "ESN", "YRI", "KHV", "JPT", "CHB", "CDX", "CHS", "TSI", "CEU", "FIN", "GBR", "IBS", "RLWK"), ordered = TRUE)
 		populations$ibdnea$Subpopulation <- factor(populations$ibdnea$Subpopulation, levels = c("LWK", "MSL", "GWD", "ESN", "YRI", "KHV", "JPT", "CHB", "CDX", "CHS", "TSI", "CEU", "FIN", "GBR", "IBS", "RLWK"), ordered = TRUE)
@@ -646,34 +646,41 @@ DrawAncientsRef <- function(populations, ancientGroup = "den", title = "Title"){
 		populations$ibdnea$Subpopulation <- factor(populations$ibdnea$Subpopulation, levels = c("LWK", "MSL", "GWD", "ESN", "YRI", "KHV", "JPT", "CHB", "CDX", "CHS", "TSI", "CEU", "FIN", "GBR", "IBS"), ordered = TRUE)
 		populations$ibdchimp$Subpopulation <- factor(populations$ibdchimp$Subpopulation, levels = c("LWK", "MSL", "GWD", "ESN", "YRI", "KHV", "JPT", "CHB", "CDX", "CHS", "TSI", "CEU", "FIN", "GBR", "IBS"), ordered = TRUE)
 	}
+
 	if (ancientGroup == "den"){
 		byTotalPairwiseDEN <- aggregate(populations$ibdden[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Length, 
 		by=list(populations$ibdden[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V1, populations$ibdden[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V3, populations$ibdden[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Population, populations$ibdden[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Subpopulation), "sum")
-		ggplot(data = byTotalPairwiseDEN[byTotalPairwiseDEN$Group.4 != "Chimpanzee",], aes(x=Group.4, y=x, fill=Group.3)) + theme_bw() +
+		 p = ggplot(data = byTotalPairwiseDEN[byTotalPairwiseDEN$Group.4 != "Chimpanzee",], aes(x=Group.4, y=x, fill=Group.3)) + theme_bw() +
 		#geom_point(data=byTotalPairwiseDEN[byTotalPairwiseDEN$Group.3 == "Hybrid",], aes(Group.3, x)) + geom_point(data=byTotalPairwiseDEN[byTotalPairwiseDEN$Group.3 == "Neandertal",], aes(Group.3, x)) +
-		geom_violin(trim = FALSE) + ggtitle(title) +
-		  labs(x="Population", y="Total Shared IBD Length", fill="Superpopulations") + scale_fill_brewer(palette="Set2")
+		geom_violin(trim = FALSE) +
+		  labs(x="Population", y="Total Shared IBD Length", fill="Population") + scale_fill_brewer(palette="Set2") + theme(legend.title=element_blank())
 	}
 	else if (ancientGroup == "nea"){
 		byTotalPairwiseNEA <- aggregate(populations$ibdnea[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Length, 
 		by=list(populations$ibdnea[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V1, populations$ibdnea[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V3, populations$ibdnea[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Population, populations$ibdnea[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Subpopulation), "sum")
 		#erm <- subset(byTotalPairwiseNEA, (!is.na(byTotalPairwiseNEA[,1]))) 
-		ggplot(data = byTotalPairwiseNEA[byTotalPairwiseNEA$Group.4 != "Chimpanzee",], aes(x=Group.4, y=x, fill=Group.3)) + geom_violin(trim = FALSE) + ggtitle(title) + theme(legend.position="none") + theme_bw() +
-		  labs(x="Population", y="Total Shared IBD Length", fill="Superpopulations") + scale_fill_brewer(palette="Set2")
+		p = ggplot(data = byTotalPairwiseNEA[byTotalPairwiseNEA$Group.4 != "Chimpanzee",], aes(x=Group.4, y=x, fill=Group.3)) + geom_violin(trim = FALSE) + theme(legend.position="none") + theme_bw() +
+		  labs(x="Population", y="Total Shared IBD Length", fill="Population") + scale_fill_brewer(palette="Set2") + theme(legend.title=element_blank())
 	}
 	else if (ancientGroup == "chimp"){
 		byTotalPairwiseCHIMP <- aggregate(populations$ibdchimp[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Length, 
 		by=list(populations$ibdchimp[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V1, populations$ibdchimp[, c("V1", "V3", "Length", "Population", "Subpopulation")]$V3,  populations$ibdchimp[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Population, populations$ibdchimp[, c("V1", "V3", "Length", "Population", "Subpopulation")]$Subpopulation), "sum")
-		ggplot(data = byTotalPairwiseCHIMP[byTotalPairwiseCHIMP$Group.4 != "Chimpanzee" & byTotalPairwiseCHIMP$Group.4 != "Neandertal" & byTotalPairwiseCHIMP$Group.1 != "Pan_troglodytes_troglodytes-10964_Cindy",], aes(x=Group.4, y=x, fill=Group.3)) + geom_violin(trim = FALSE) + ggtitle(title) + theme(legend.position="none") + theme_bw() +
-		  labs(x="Population", y="Total Shared IBD Length", fill="Superpopulations") + scale_fill_brewer(palette="Set2")
+		p = ggplot(data = byTotalPairwiseCHIMP[byTotalPairwiseCHIMP$Group.4 != "Chimpanzee" & byTotalPairwiseCHIMP$Group.4 != "Neandertal" & byTotalPairwiseCHIMP$Group.1 != "Pan_troglodytes_troglodytes-10964_Cindy",], aes(x=Group.4, y=x, fill=Group.3)) + geom_violin(trim = FALSE) + theme(legend.position="none") + theme_bw() +
+		  labs(x="Population", y="Total Shared IBD Length", fill="Population") + scale_fill_brewer(palette="Set2")
 	}
 	else if (ancientGroup == "hybrid"){
 		byTotalPairwiseHYB <- aggregate(populations$ibdhyb[, c("V1", "V3", "Length", "Subpopulation")]$Length, 
 		by=list(populations$ibdhyb[, c("V1", "V3", "Length", "Subpopulation")]$V1, populations$ibdhyb[, c("V1", "V3", "Length", "Subpopulation")]$V3, populations$ibdhyb[, c("V1", "V3", "Length", "Subpopulation")]$Subpopulation), "sum")
-		ggplot(data = byTotalPairwiseHYB[byTotalPairwiseHYB$Group.1 != "Pan_troglodytes_troglodytes-10964_Cindy" & byTotalPairwiseHYB$Group.1 != "HG03052" ,], aes(x=Group.3, y=x, fill=Group.3)) + theme_bw() +
-		geom_violin(trim = FALSE) + ggtitle("Hybrid") + theme(legend.position="none")  + geom_point(data=byTotalPairwiseHYB[byTotalPairwiseHYB$Group.3 == "Denisovan",], aes(Group.3, x)) +
+		p = ggplot(data = byTotalPairwiseHYB[byTotalPairwiseHYB$Group.1 != "Pan_troglodytes_troglodytes-10964_Cindy" & byTotalPairwiseHYB$Group.1 != "HG03052" ,], aes(x=Group.3, y=x, fill=Group.3)) + theme_bw() +
+		geom_violin(trim = FALSE) + theme(legend.position="none")  + geom_point(data=byTotalPairwiseHYB[byTotalPairwiseHYB$Group.3 == "Denisovan",], aes(Group.3, x)) +
 		geom_point(data=byTotalPairwiseHYB[byTotalPairwiseHYB$Group.3 == "Neandertal",], aes(Group.3, x)) +
 		labs(x="Population", y="Total Shared IBD Length")
+	}
+	if (title == ""){
+		p
+	}
+	else{
+		p + ggtitle(title)
 	}
 }
 
@@ -692,7 +699,7 @@ DrawAncientMeanSegLen <- function(populations, ancientGroup = "den"){
 	}
 }
 
-DrawAncientMeanSegLenv2 <- function(populations, ancientGroup = "den", title = "Title"){
+DrawAncientMeanSegLenv2 <- function(populations, ancientGroup = "den", title = ""){
 	if (ancientGroup == "den"){
 	  ggplot() +
 	  theme_bw() +
@@ -701,7 +708,7 @@ DrawAncientMeanSegLenv2 <- function(populations, ancientGroup = "den", title = "
 	  geom_density(data = populations$ibdden[populations$ibdden$Subpopulation == "RLWK",], aes(Length, fill=Subpopulation), alpha=0.2) +
 	  geom_density(data = populations$ibdden[populations$ibdden$Subpopulation == "RYRI",], aes(Length, fill=Subpopulation), alpha=0.2) +
 	  scale_fill_brewer(palette="Set2") +
-	  ggtitle(title) + labs(x="Segment Length", y="Density") + scale_x_continuous(limits = c(0, 40000))
+	  ggtitle(title) + labs(x="Segment Length", y="Density") + scale_x_continuous(limits = c(0, 40000)) + theme(legend.title=element_blank())
 	}
 	else if (ancientGroup == "nea"){
 	  ggplot() +

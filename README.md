@@ -364,7 +364,83 @@ normtrunkated$ibdnea <- normcut$ibdnea[normcut$ibdnea$Length < 10000,]
 source('~/Sheffield/Rworkdir/commands1.R')
 ```
 
-### figure 2
+### Figure 1
+```r
+CHB <- c('39.916667', '116.383333') # beijin
+CHS <- c('23.133333', '113.266667') # Guangzhou
+JPT <- c('35.683333', '139.683333') #tokyuo
+CDX <- c('22', '100.8') # Xishuangbanna Dai
+KHV <- c('10.8', '106.65') # Ho Chi Minh 
+TSI <- c('43.771389', '11.254167') # Tuscani (Firenze?)
+FIN <- c('60.166667', '24.933333') #Helsinki
+GBR <- c('51.5', '-0.116667') # london
+IBS <- c('40.433333', '-3.7') # Madrid
+YRI <- c('7.396389', '3.916667') # Ibadan
+LWK <- c('0.616667', '34.766667') # Webuye
+GWD <- c('13.25', '-16.316667') # West Coast Division (Gambia)
+MSL <- c('8', '-12.25') # Southern Province, Sierra Leone
+ESN <- c('6.7108947', '6.2964743') #Uromi, Esanland
+CEU <- c('39', '-111') # Utah
+Cave <- c(84.676111, 51.3975) # Denisova Cave
+
+Asia <- data.frame(rbind(CHB, CHS, JPT, CDX, KHV))
+Europe <- data.frame(rbind(TSI, FIN, GBR, IBS,  CEU))
+Africa <- data.frame(rbind(YRI, LWK, GWD, MSL, ESN))
+colnames(Asia) <- c('lon', 'lat')
+colnames(Europe) <- c('lon', 'lat')
+colnames(Africa) <- c('lon', 'lat')
+Asia$lon <-as.numeric(as.character(Asia$lon))
+Asia$lat <-as.numeric(as.character(Asia$lat))
+Europe$lon <-as.numeric(as.character(Europe$lon))
+Europe$lat <-as.numeric(as.character(Europe$lat))
+Africa$lon <-as.numeric(as.character(Africa$lon))
+Africa$lat <-as.numeric(as.character(Africa$lat))
+Asia$Population <- rownames(Asia)
+Europe$Population <- rownames(Europe)
+Africa$Population <- rownames(Africa)
+Africa$Population <- rownames(Africa)
+
+library(maps)
+library(ggplot2)
+world_map <- map_data("world")
+p <- ggplot() + coord_fixed() +
+  xlab("") + ylab("") + 
+geom_polygon(data=world_map, aes(x=long, y=lat, group=group), 
+                               colour="gray90", fill="gray90")
+
+cleanup <- 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_rect(fill = 'white', colour = 'white'), 
+        axis.line = element_line(colour = "white"), legend.position="none",
+        axis.ticks=element_blank(), axis.text.x=element_blank(),
+        axis.text.y=element_blank())
+
+world <- p + cleanup
+
+map_data <- 
+  world +
+  geom_point(data=Asia, 
+             aes(x=lat, y=lon), colour="gray1", 
+             fill="#D95F02",pch=21, size=5, alpha=I(0.7)) +
+  geom_text(data=Asia, aes(lat, lon, label=Population, vjust=-1)) +
+  geom_point(data=Europe, 
+             aes(x=lat, y=lon), colour="gray1", 
+             fill="#7570B3",pch=21, size=5, alpha=I(0.7)) +
+  geom_text(data=Europe, aes(lat, lon, label=Population, vjust=-1)) +
+  geom_point(data=Africa, 
+             aes(x=lat, y=lon), colour="gray1", 
+             fill="#1B9E77",pch=21, size=5, alpha=I(0.7)) +
+  geom_text(data=Africa, aes(lat, lon, label=Population, vjust=ifelse(Population == "MSL" | Population == "ESN", 1.85, -1))) +
+  geom_point(aes(x=Cave[1], y=Cave[2]), colour="gray1",
+             fill="#E7298A",pch=21, size=5, alpha=I(0.7)) +
+  geom_text(aes(x=Cave[1], y=Cave[2], label='Denisova Cave', vjust=-1))
+  
+tiff("MAP.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
+map_data
+dev.off()
+```
+
+### Figure 3
 ```r
 YRI <- read.table('YRI.list')
 GBR <- read.table('GBR.list')
@@ -381,21 +457,21 @@ dev.off()
 
 ```
 
-### figure 3a
+### Figure 4a
 ```r
 tiff("FTrezhighResDenisovanCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(norm)
 dev.off()
 ```
 
-### figure 3b
+### Figure 4b
 ```r
 tiff("FTrezhighResNeandertalCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(norm, "nea")
 dev.off()
 ```
 
-### figure 4
+### Figure 5
 ```r
 tiff("FTrezhighResMainVsRandCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 ggplot() + 
@@ -411,21 +487,21 @@ geom_text(aes(x=1000, y=0.00018, label = "Random"), alpha=0.7) + theme(legend.ti
 dev.off()
 ```
 
-### figure 5a
+### Figure 6a
 ```r
 tiff("FTrezhighResDenCutCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(normcut)
 dev.off()
 ```
 
-### figure 5b
+### Figure 6b
 ```r
 tiff("FTrezhighResNeaCutCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(normcut, "nea")
 dev.off()
 ```
 
-### figure 6a
+### Figure 7a
 ```r
 threepops <- superpopulations("last3Merg")
 
@@ -434,14 +510,14 @@ DrawAncientsRef(threepops)
 dev.off()
 ```
 
-### figure 6b
+### Figure 7b
 ```r
 tiff("FTrezhighThreePopCutCor.tiff", height = 12, width = 16, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(threerealcut)
 dev.off()
 ```
 
-### figure 7a
+### Figure 8a
 ```r
 randYRI <- superpopulations("randYRImerg")
 threerealcut <- threepops
@@ -452,7 +528,7 @@ DrawAncientMeanSegLenv2(norm)
 dev.off()
 ```
 
-### figure 7b
+### Figure 8b
 ```r
 manyall <- superpopulations("manyallmerg")
 tiff("FTrezhighRes4mDenSegLenCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
@@ -460,7 +536,7 @@ DrawAncientMeanSegLenv2(manyall)
 dev.off()
 ```
 
-### figure 8a
+### Figure 9a
 ```r
 chr1original <- superpopulations("onlychr1.final")
 tiff("FTrezhighResDenisovanChr1Cor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
@@ -468,7 +544,7 @@ DrawAncientsRef(chr1original)
 dev.off()
 ```
 
-### figure 8b
+### Figure 9b
 ```r
 randcor <- superpopulations("randCorrMerg")
 tiff("FTrezhighResDenisovanRLWKCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
@@ -476,7 +552,7 @@ DrawAncientsRef(randcor)
 dev.off()
 ```
 
-### figure 9a
+### Figure 10a
 ```r
 tiff("FTrezhighResRandNeaAndTrunkCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 ggplot() + 
@@ -493,7 +569,7 @@ theme(legend.title=element_blank())
 dev.off()
 ```
 
-### figure 9b
+### Figure 10b
 ```r
 tiff("FTrezhighResNeaTrunkCor.tiff", height = 12, width = 22, units = 'cm', compression = "lzw", res = 1200)
 DrawAncientsRef(normtrunkated, "nea")

@@ -1,6 +1,18 @@
-import sys,re,random
+"""
+Reads VCF to use the metadata and creates a population of 30
+Individuals with random phased genotypes.
+"""
 
-def parseVCF(vcf):
+import re
+import random
+import argparse
+
+parser = argparse.ArgumentParser(description='Creates population with random genotypes.')
+parser.add_argument('--vcf', help='VCF file', required=True)
+args = parser.parse_args()
+
+
+def output_random_population(vcf):
 	genotypes = ["0|0", "0|1", "1|0", "1|1"]
 	with open(vcf, 'r') as f:
 		for line in f:
@@ -22,7 +34,7 @@ def parseVCF(vcf):
 						print(random.choice(genotypes), end="\t")
 					else:
 						print(random.choice(genotypes))
-if len(sys.argv) == 2:
-	parseVCF(sys.argv[1])
-else:
-	print("Script needs custom-made vcf")
+
+
+if __name__ == '__main__':
+	output_random_population(args.vcf)

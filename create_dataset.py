@@ -46,12 +46,21 @@ def create_individuals_list(population, individuals_number):
     return exract_individuals(individuals_file, population, individuals_number)
 
 
+def decide_source_dataset(individuals_number):
+    if int(individuals_number) > 30:
+        return '/home/bo4da/Scripts/create-dataset-job.sh'
+    else:
+        return '/home/bo4da/Scripts/bcftools-job.sh'
+
+
 def main():
+    """
+    Create a DRMAA session then submit a job.s
+    """
+    if int(args.number) > 30:
+        exit('Populations larger than 30 individuals are not yet supported.')
+
     list_name = create_individuals_list(args.population, int(args.number))
-    """
-    Create a DRMAA session then submit a job.
-    Note, need file called myjob.sh in the current directory.
-    """
     workdir = args.population + args.number
 
     os.makedirs(workdir, exist_ok=True)
@@ -59,9 +68,15 @@ def main():
 
     with drmaa.Session() as s:
         for chromosome in range(1, 23):
+
+            chromosome_file = 'http://cdna.eva.mpg.de/denisova/VCF/hg19_1000g/T_hg19_1000g.' + chromosome + '.mod.vcf.gz'
+            if not os.path.exists('../' + chromosome_file):
+                subprocess.run('wget -P' + chromosome_file, check=True, shell=True)
+                subprocess.run('wget -P' + chromosome_file + '.tbi', check=True, shell=True)
+
             jt = s.createJobTemplate()
             # The job is to run an executable in the current working directory
-            jt.remoteCommand = '/home/bo4da/Scripts/bcftools-job.sh'
+            jt.remoteCommand = decide_source_dataset(args.number)
             # Arguments to the remote command
             jt.args = [chromosome, '../' + list_name]
             # Join the standard output and error logs

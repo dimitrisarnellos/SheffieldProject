@@ -57,8 +57,6 @@ def main():
     """
     Create a DRMAA session then submit a job.s
     """
-    if int(args.number) > 30:
-        exit('Populations larger than 30 individuals are not yet supported.')
 
     list_name = create_individuals_list(args.population, int(args.number))
     workdir = args.population + args.number
@@ -67,25 +65,25 @@ def main():
     os.chdir(workdir)
 
     with drmaa.Session() as s:
-        for chromosome in range(1, 23):
+        # for chromosome in range(1, 23):
+        chromosome = '22' # delet this
+        chromosome_file = 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr' + str(chromosome) + '.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
+        if not os.path.exists('../ALL.chr' + str(chromosome) + '.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'):
+            subprocess.run('wget -P ../ ' + chromosome_file, check=True, shell=True)
+            subprocess.run('wget -P ../ ' + chromosome_file + '.tbi', check=True, shell=True)
 
-            chromosome_file = 'http://cdna.eva.mpg.de/denisova/VCF/hg19_1000g/T_hg19_1000g.' + chromosome + '.mod.vcf.gz'
-            if not os.path.exists('../' + chromosome_file):
-                subprocess.run('wget -P' + chromosome_file, check=True, shell=True)
-                subprocess.run('wget -P' + chromosome_file + '.tbi', check=True, shell=True)
+        jt = s.createJobTemplate()
+        # The job is to run an executable in the current working directory
+        jt.remoteCommand = decide_source_dataset(args.number)
+        # Arguments to the remote command
+        jt.args = [str(chromosome), '../' + list_name]
+        # Join the standard output and error logs
+        jt.joinFiles = True
 
-            jt = s.createJobTemplate()
-            # The job is to run an executable in the current working directory
-            jt.remoteCommand = decide_source_dataset(args.number)
-            # Arguments to the remote command
-            jt.args = [chromosome, '../' + list_name]
-            # Join the standard output and error logs
-            jt.joinFiles = True
+        job_id = s.runJob(jt)
+        print('Job {} submitted'.format(job_id))
 
-            job_id = s.runJob(jt)
-            print('Job {} submitted'.format(job_id))
-
-            s.deleteJobTemplate(jt)
+        s.deleteJobTemplate(jt)
 
 
 if __name__ == '__main__':

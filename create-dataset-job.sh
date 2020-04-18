@@ -1,11 +1,13 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 chr=$1
 list_name=$2
 
 zgrep "^[^#]" /data/bo4da/Merged/reffiltered${chr}.recode.vcf.gz | awk '{print $1"\t"$2}' > positions${chr}.txt
-/home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S <(cat $list_name | sed '$d') -R positions${chr}.txt > ${chr}.vcf
+if [ ! -s ${chr}.vcf ]; then
+    /home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S <(cat $list_name | sed '$d') -T positions${chr}.txt > ${chr}.vcf
+fi
 /home/bo4da/Programs/bin/bgzip ${chr}.vcf
 /home/bo4da/Programs/bin/tabix -p vcf ${chr}.vcf.gz
 
@@ -16,4 +18,5 @@ for i in $(seq 0 1); do /home/bo4da/Programs/bin/tabix -p vcf isec${chr}/000${i}
 
 ###
 module load apps/vcftools/0.1.14
-vcftools --vcf merged${chr}.vcf --remove-indels --non-ref-ac-any 1 --remove-filtered LowQual --max-missing 1 --recode --out submit${chr}
+vcftools --vcf merged${chr}.vcf --remove-indels --remove-filtered LowQual --max-missing 1 --recode --out submit${chr}
+rm merged${chr}.vcf

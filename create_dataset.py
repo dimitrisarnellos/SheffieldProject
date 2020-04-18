@@ -80,7 +80,7 @@ def main():
             # Join the standard output and error logs
             jt.joinFiles = True
             # jt.nativeSpecification = '-l h_rt=03:00:00 -l rmem=8G'
-            jt.jobName = args.population + args.number + 'chr' + chromosome
+            jt.jobName = args.population + args.number + 'chr' + str(chromosome)
 
             job_id = s.runJob(jt)
             print('Job {} submitted'.format(job_id))

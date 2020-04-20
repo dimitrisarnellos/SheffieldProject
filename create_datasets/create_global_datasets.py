@@ -40,7 +40,7 @@ def main():
             get_source_files(chromosome)
             jt = s.createJobTemplate()
             # The job is to run an executable in the current working directory
-            jt.remoteCommand = '/home/bo4da/Scripts/create-global-dataset-job.sh'
+            jt.remoteCommand = '/home/bo4da/Scripts/create_datasets/create-global-dataset-job.sh'
             # Arguments to the remote command
             jt.args = [str(chromosome), args.mode, args.number]
             # Join the standard output and error logs

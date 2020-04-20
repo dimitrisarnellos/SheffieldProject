@@ -4,6 +4,7 @@ import drmaa
 import os
 import argparse
 import subprocess
+import csv
 
 parser = argparse.ArgumentParser(description='Builds dataset from 1000genomes together with the Denisovan.')
 parser.add_argument('-n', '--number', help='Number of individuals per population', required=True)
@@ -11,23 +12,38 @@ parser.add_argument('-m', '--mode', choices=['vanilla', 'full'], default='vanill
 args = parser.parse_args()
 
 
+def write_to_file(population_file, individual):
+    with open(population_file, 'a') as f:
+        print(individual, file=f)
+
+
+def population_lists(individuals_file):
+    with open(individuals_file) as csvfile:
+        f = csv.reader(csvfile, delimiter='\t')
+        for row in f:
+            population_file = row[1] + '.list'
+            individual = row[0]
+            write_to_file(population_file, individual)
+
+
 def get_source_files(chromosome):
     chromosome_file = 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr' + str(chromosome) + '.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
-    individuals_file = 'integrated_call_samples_v3.20130502.ALL.panel'
-    individuals_file_url = 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel'
 
     if not os.path.exists('../ALL.chr' + str(chromosome) + '.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'):
         subprocess.run('wget -P ../ ' + chromosome_file, check=True, shell=True)
         subprocess.run('wget -P ../ ' + chromosome_file + '.tbi', check=True, shell=True)
 
-    if not os.path.exists('../' + individuals_file):
-        subprocess.run('wget -P ../ ' + individuals_file_url, check=True, shell=True)
-
-
+ 
 def main():
     """
     Create a DRMAA session then submit a job.s
     """
+    individuals_file = 'integrated_call_samples_v3.20130502.ALL.panel'
+    individuals_file_url = 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel'
+    if not os.path.exists(individuals_file):
+        subprocess.run('wget ' + individuals_file_url, check=True, shell=True)
+
+    population_lists(individuals_file)
 
     workdir = 'Global' + args.mode + args.number
 

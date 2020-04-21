@@ -13,7 +13,7 @@ if [ $mode = "vanilla" ]; then
     /home/bo4da/Programs/bin/bgzip ${chr}.vcf
     /home/bo4da/Programs/bin/tabix -p vcf ${chr}.vcf.gz
 
-    /home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ${chr}.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz
+    /home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ${chr}.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz /data/bo4da/Neandertal/NeaChr${chr}Filt2nd.vcf.gz /data/bo4da/Chimpanzee/chimpChr${chr}.vcf.gz
 else
     /home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz /data/bo4da/Neandertal/NeaChr${chr}Filt2nd.vcf.gz /data/bo4da/Chimpanzee/chimpChr${chr}.vcf.gz
 fi

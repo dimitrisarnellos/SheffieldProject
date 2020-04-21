@@ -50,7 +50,6 @@ def main():
         subprocess.run('wget ' + individuals_file_url, check=True, shell=True)
 
     population_lists(individuals_file)
-    exit()
 
     workdir = 'Global' + args.mode + args.number
 

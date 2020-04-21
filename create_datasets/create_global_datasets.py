@@ -5,6 +5,7 @@ import os
 import argparse
 import subprocess
 import csv
+from collections import Counter
 
 parser = argparse.ArgumentParser(description='Builds dataset from 1000genomes together with the Denisovan.')
 parser.add_argument('-n', '--number', help='Number of individuals per population', required=True)
@@ -20,9 +21,14 @@ def write_to_file(population_file, individual):
 def population_lists(individuals_file):
     with open(individuals_file) as csvfile:
         f = csv.reader(csvfile, delimiter='\t')
+        population = Counter()
         for row in f:
+            population[row[1]] += 1
             population_file = row[1] + '.list'
             individual = row[0]
+
+            if os.path.exists(population_file) and population[row[1]] == 1:
+                os.remove(population_file)
             write_to_file(population_file, individual)
 
 
@@ -44,6 +50,7 @@ def main():
         subprocess.run('wget ' + individuals_file_url, check=True, shell=True)
 
     population_lists(individuals_file)
+    exit()
 
     workdir = 'Global' + args.mode + args.number
 

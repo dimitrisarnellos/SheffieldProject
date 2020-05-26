@@ -3,11 +3,8 @@ set -euo pipefail
 
 chr=$1
 mode=$2
-no_indivs=$3
 
 if [ $mode = "vanilla" ]; then
-    ls ../CDX.list ../CEU.list ../CH* ../ESN.list ../FIN.list ../GBR.list ../GWD.list ../IBS.list ../JPT.list ../KHV.list ../LWK.list ../MSL.list ../TSI.list ../YRI.list | while read line; do head -n${no_indivs} $line; done > global30indivsperpop.list
-
     /home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S global30indivsperpop.list > ${chr}.vcf
 
     /home/bo4da/Programs/bin/bgzip ${chr}.vcf

@@ -68,7 +68,7 @@ def main():
             # The job is to run an executable in the current working directory
             jt.remoteCommand = '/home/bo4da/Scripts/create_datasets/create-global-dataset-job.sh'
             # Arguments to the remote command
-            jt.args = [str(chromosome), args.mode]
+            jt.args = [str(chromosome), args.mode, args.number]
             # Join the standard output and error logs
             jt.joinFiles = True
             # jt.nativeSpecification = '-l h_rt=03:00:00 -l rmem=8G'

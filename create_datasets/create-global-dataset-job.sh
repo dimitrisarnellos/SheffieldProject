@@ -3,9 +3,10 @@ set -euo pipefail
 
 chr=$1
 mode=$2
+no_indivs=$3
 
 if [ $mode = "vanilla" ]; then
-    /home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S global30indivsperpop.list > ${chr}.vcf
+    /home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S global${no_indivs}indivsperpop.list > ${chr}.vcf
 
     /home/bo4da/Programs/bin/bgzip ${chr}.vcf
     /home/bo4da/Programs/bin/tabix -p vcf ${chr}.vcf.gz

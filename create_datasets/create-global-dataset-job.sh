@@ -2,19 +2,14 @@
 set -euo pipefail
 
 chr=$1
-mode=$2
-no_indivs=$3
+no_indivs=$2
 
-if [ $mode = "vanilla" ]; then
-    /home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S global${no_indivs}indivsperpop.list > ${chr}.vcf
+/home/bo4da/Programs/bin/bcftools view ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -S ${no_indivs}indivsperpop.list > ${chr}.vcf
 
-    /home/bo4da/Programs/bin/bgzip ${chr}.vcf
-    /home/bo4da/Programs/bin/tabix -p vcf ${chr}.vcf.gz
+/home/bo4da/Programs/bin/bgzip ${chr}.vcf
+/home/bo4da/Programs/bin/tabix -p vcf ${chr}.vcf.gz
 
-    /home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ${chr}.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz /data/bo4da/Neandertal/NeaChr${chr}Filt2nd.vcf.gz /data/bo4da/Chimpanzee/chimpChr${chr}.vcf.gz
-else
-    /home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ../ALL.chr${chr}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz /data/bo4da/Neandertal/NeaChr${chr}Filt2nd.vcf.gz /data/bo4da/Chimpanzee/chimpChr${chr}.vcf.gz
-fi
+/home/bo4da/Programs/bin/bcftools isec -c all -p isec${chr} -n=4 ${chr}.vcf.gz /data/bo4da/Denisovan/DenChr${chr}Filt2nd.vcf.gz /data/bo4da/Neandertal/NeaChr${chr}Filt2nd.vcf.gz /data/bo4da/Chimpanzee/chimpChr${chr}.vcf.gz
 
 for i in $(seq 0 3); do /home/bo4da/Programs/bin/bgzip isec${chr}/000${i}.vcf; done
 for i in $(seq 0 3); do /home/bo4da/Programs/bin/tabix -p vcf isec${chr}/000${i}.vcf.gz; done

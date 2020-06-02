@@ -58,7 +58,9 @@ def main():
 
     # run this once and outside of each job so that it doesn't keep getting overwritten
     if args.mode == 'vanilla':
-        subprocess.run(f'ls ../CDX.list ../CEU.list ../CH* ../ESN.list ../FIN.list ../GBR.list ../GWD.list ../IBS.list ../JPT.list ../KHV.list ../LWK.list ../MSL.list ../TSI.list ../YRI.list | while read line; do head -n{args.number} $line; done > global{args.number}indivsperpop.list', check=True, shell=True)
+        subprocess.run(f'ls ../CDX.list ../CEU.list ../CH* ../ESN.list ../FIN.list ../GBR.list ../GWD.list ../IBS.list ../JPT.list ../KHV.list ../LWK.list ../MSL.list ../TSI.list ../YRI.list | while read line; do head -n{args.number} $line; done > {args.number}indivsperpop.list', check=True, shell=True)
+    elif args.mode == 'full':
+        subprocess.run(f'ls ../ACB.list ../ASW.list ../BEB.list ../CDX.list ../CEU.list ../CH* ../CLM.list ../ESN.list ../FIN.list ../GBR.list ../GIH.list ../GWD.list ../IBS.list ../ITU.list ../JPT.list ../KHV.list ../LWK.list ../MSL.list ../MXL.list ../PEL.list ../PJL.list ../PUR.list ../STU.list ../TSI.list ../YRI.list | while read line; do head -n{args.number} $line; done > {args.number}indivsperpop.list', check=True, shell=True)
 
     with drmaa.Session() as s:
         for chromosome in range(1, 23):
@@ -68,7 +70,7 @@ def main():
             # The job is to run an executable in the current working directory
             jt.remoteCommand = '/home/bo4da/Scripts/create_datasets/create-global-dataset-job.sh'
             # Arguments to the remote command
-            jt.args = [str(chromosome), args.mode, args.number]
+            jt.args = [str(chromosome), args.number]
             # Join the standard output and error logs
             jt.joinFiles = True
             # jt.nativeSpecification = '-l h_rt=03:00:00 -l rmem=8G'
